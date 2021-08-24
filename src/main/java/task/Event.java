@@ -4,30 +4,45 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class Event extends Task {
-    private static final String type = "E";
+    private static final String TYPE = "E";
     private static final DateTimeFormatter DATABASE_DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
-    private LocalDateTime due;
+    private LocalDateTime date;
 
-    public Event(String description, String due) {
+    public Event(String description) {
         super(description);
-        this.due = LocalDateTime.parse(due, DATABASE_DATE_TIME_FORMAT);
     }
 
-    private String[] formatDate(LocalDateTime date) {
-        return date.format(DATABASE_DATE_TIME_FORMAT).split(" ");
+    public Event(String description, String date) {
+        super(description);
+        this.date = LocalDateTime.parse(date, DATABASE_DATE_TIME_FORMAT);
     }
 
     public Event(String description, boolean isDone) {
         super(description, isDone);
     }
 
+    public Event(String description, String date, boolean isDone) {
+        super(description, isDone);
+        this.date = LocalDateTime.parse(date, DATABASE_DATE_TIME_FORMAT);
+    }
+
+    private String[] formatDate(LocalDateTime date) {
+        return date.format(DATABASE_DATE_TIME_FORMAT).split(" ");
+    }
+
     public String getLabel() {
-        return type;
+        return TYPE;
+    }
+
+    @Override
+    public String databaseString() {
+        return TYPE + " | " + super.databaseString() + " | "
+                + task.Event.this.date;
     }
 
     @Override
     public String toString() {
         return String.format("[%s][%s] %s (at: %s)", getLabel(), getStatusIcon(),
-                this.description, formatDate(due)[0] + " " + formatDate(due)[1]);
+                this.description, formatDate(date)[0] + " " + formatDate(date)[1]);
     }
 }

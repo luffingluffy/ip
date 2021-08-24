@@ -1,7 +1,7 @@
 package task;
 
 public class Todo extends Task {
-    private static final String type = "T";
+    private static final String TYPE = "T";
 
     public Todo(String description) {
         super(description);
@@ -12,7 +12,12 @@ public class Todo extends Task {
     }
 
     public String getLabel() {
-        return type;
+        return TYPE;
+    }
+
+    @Override
+    public String databaseString() {
+        return TYPE + " | " + super.databaseString();
     }
 
     @Override

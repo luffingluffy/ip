@@ -3,11 +3,14 @@ import task.Event;
 import task.Task;
 import task.Todo;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Duke {
-    static Task[] botList = new Task[100];
+    static ArrayList<Task> taskList;
     static int numItems = 0;
+    static Storage storage;
 
     static String introMsg = "Hello! I'm Biscuit.\n"
             + "What do you want me to do?\n";
@@ -19,6 +22,16 @@ public class Duke {
 
     static void introduce() {
         System.out.println(introMsg);
+    }
+
+    static void read() {
+        storage = new Storage("data/duke.txt");
+        try {
+            taskList = storage.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+            taskList = new ArrayList<>();
+        }
     }
 
     static void reply() {
@@ -38,55 +51,57 @@ public class Duke {
                     }
 
                     System.out.println(todoMsg);
-                    botList[numItems] = new Todo(param);
-                    System.out.println(botList[numItems]);
+                    taskList.add(new Todo(param));
+                    System.out.println(taskList.get(numItems));
                     numItems++;
                     System.out.printf("Now you have %d tasks in the list.\n", numItems);
+                    storage.write(taskList);
                     break;
                 case "list":
                     System.out.println(listMsg);
-                    int index = 0;
-                    for (int i = 0; i < numItems; i++) {
-                        if (botList[i] != null) {
-                            System.out.println((index + 1) + "." + botList[i]);
-                            index++;
-                        }
-                    }
+                    taskList.forEach(task -> System.out.println(taskList.indexOf(task) + 1 + "." + task));
                     break;
                 case "deadline":
                     System.out.println(todoMsg);
 
                     String[] taskItems = param.split(" /by ", 2);
                     String desc = taskItems[0].strip();
-                    String due = taskItems[1].strip();
-
-                    botList[numItems] = new Deadline(desc, due);
+                    if (taskItems.length == 1) {
+                        taskList.add(new Deadline(desc));
+                    } else {
+                        taskList.add(new Deadline(desc, taskItems[1].strip()));
+                    }
                     numItems++;
                     System.out.printf("Now you have %d tasks in the list.\n", numItems);
+                    storage.write(taskList);
                     break;
                 case "event":
                     System.out.println(todoMsg);
-
                     taskItems = param.split(" /at ", 2);
                     desc = taskItems[0].strip();
-                    due = taskItems[1].strip();
-
-                    botList[numItems] = new Event(desc, due);
+                    if (taskItems.length == 1) {
+                        taskList.add(new Event(desc));
+                    } else {
+                        taskList.add(new Event(desc, taskItems[1].strip()));
+                    }
                     numItems++;
                     System.out.printf("Now you have %d tasks in the list.\n", numItems);
+                    storage.write(taskList);
                     break;
                 case "done":
                     System.out.println(doneMsg);
                     int intParam = Integer.parseInt(param) - 1;
-                    botList[intParam].markAsDone();
-                    System.out.println(botList[intParam]);
+                    taskList.get(intParam).markAsDone();
+                    System.out.println(taskList.get(intParam));
+                    storage.write(taskList);
                     break;
                 case "delete":
                     System.out.println(deleteMsg);
-                    int temp = numItems - 1;
+                    --numItems;
                     intParam = Integer.parseInt(param) - 1;
-                    botList[intParam] = null;
-                    System.out.printf("Now you have %d tasks in the list.\n", temp);
+                    taskList.remove(intParam);
+                    System.out.printf("Now you have %d tasks in the list.\n", numItems);
+                    storage.write(taskList);
                     break;
                 case "bye":
                     System.out.println(byeMsg);
@@ -101,6 +116,7 @@ public class Duke {
     }
 
     public static void main(String[] args) {
+        read();
         introduce();
         reply();
     }
