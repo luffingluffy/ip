@@ -1,3 +1,4 @@
+import storage.Storage;
 import task.Deadline;
 import task.Event;
 import task.TaskList;
@@ -13,7 +14,7 @@ public class Duke {
     static TaskList taskList;
     static Storage storage;
     static Ui ui;
-    
+
     static String byeMsg = "Bye. Hope to see you again soon!";
     static String listMsg = "Here are the tasks in your list:";
     static String doneMsg = "Nice! I've marked this task as done:";
