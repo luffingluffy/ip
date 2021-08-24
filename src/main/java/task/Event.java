@@ -37,7 +37,7 @@ public class Event extends Task {
     @Override
     public String databaseString() {
         return TYPE + " | " + super.databaseString() + " | "
-                + task.Event.this.date;
+                + formatDate(date)[0] + " " + formatDate(date)[1];
     }
 
     @Override

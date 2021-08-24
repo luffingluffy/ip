@@ -33,7 +33,7 @@ public class Deadline extends Task {
     @Override
     public String databaseString() {
         return TYPE + " | " + super.databaseString() + " | "
-                + deadline;
+                + formatDate(deadline)[0] + " " + formatDate(deadline)[1];
     }
 
     @Override
